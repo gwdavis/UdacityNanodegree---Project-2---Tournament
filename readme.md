@@ -1,4 +1,5 @@
-# Tournament - a Udacity Nano-Degree Project for Full Stack Foundations
+# Tournament v1.1- a Udacity Nano-Degree Project for Full Stack Foundations
+###Allow Tied Games
 March 2015 by Gary Davis
 
 Tournament is small python backend that implements an SQL database using postgresql to store players and determine the winner for a Swiss-Style tournament (see: http://en.wikipedia.org/wiki/Swiss-system_tournament).  Methods/functions are provided that can clear the database, add players, record matches, display results and show matchings for the next round.  If there are an odd number of players, a bye will be included in the players matchings.

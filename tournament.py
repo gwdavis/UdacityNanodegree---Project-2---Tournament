@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# tournament.py -- implementation of a Swiss-system tournament
+# tournament.py v1.1 -- implementation of a Swiss-system tournament
+# allow tied games
 # a Udacity Nano-Degree Project for Full Stack Foundations
 # March 2015 by Gary Davis
 #
@@ -62,92 +63,80 @@ def registerPlayer(name):
 
 
 def playerStandings():
-    """Returns a list of the players and their win records, sorted by wins.
+    """Returns a list of the players and their points records and number of
+    matches played, sorted by wins.
 
     Returns:
-      A list of tuples, each of which contains (id, name, wins, matches):
+      A list of tuples, each of which contains (id, name, points, matches):
         id: the player's unique id (assigned by the database)
         name: the player's full name (as registered)
-        wins: the number of matches the player has won
+        points: the sum of wins, losses and ties for the player
         matches: the number of matches the player has played
     """
     conn = connect()
     c = conn.cursor()
-    # Join the players table and a view of the matches table.
-    # The view of the matches table (long_match_list) lists each player
-    # in column one and his opponent and results (i.e. there will be two enteries
-    # for each match).  Select the id, name and a count of the wins for each player.
-    # Sort by the wins .
-    c.execute(
-        # summing the wins column gives the total number of wins
-        # counting the wins column gives the total number of matches
-        # players table provides the name
-        #long_match_view table provides the wins column as a 1 or 0
-        "SELECT\
-            P_Id as id,\
-            player_name as name,\
-            COALESCE(SUM(wins), 0) as wins,\
-            count(wins) as matches\
-        FROM players\
-        LEFT JOIN long_match_list ON P_Id = player\
-        GROUP BY P_Id\
-        ORDER BY wins desc;")
-    result = c.fetchall()
-    conn.close()
-    return result
-
-
-def playerStandings2():
-    """Returns a list of the players and their win records, sorted by wins.
-
-    Returns:
-      A list of tuples, each of which contains (id, name, wins, matches):
-        id: the player's unique id (assigned by the database)
-        name: the player's full name (as registered)
-        wins: the number of matches the player has won
-        matches: the number of matches the player has played
-    """
-    conn = connect()
-    c = conn.cursor()
-
     # Join the players table and a view of the matches table.
     # The view of the matches table (long_match_list) lists each player
     # in column one and his opponent and results (i.e. there will be two
-    # enteries for each match).  Select the id, name and a count of the
-    # wins for each player.
+    # enteries for each match).  Select the id, name and a sum of the
+    # points for each player.
     # Sort by the wins .
     c.execute(
-        """SELECT
-            player as id,
-            COALESCE(SUM(wins), 0) as wins,
-            count(wins) as matches
-        FROM long_match_list
-        GROUP BY player
-        ORDER BY wins desc;""")
+        # Summing the points column gives the total number of points
+        # Sounting the points column gives the total number of matches
+        # players table provides the name
+        # long_match_view table provides the points column as a 1, -1 or 0
+        "SELECT\
+            P_Id as id,\
+            player_name as name,\
+            COALESCE(SUM(points), 0) as points,\
+            count(points) as matches\
+        FROM players\
+        LEFT JOIN long_match_list ON P_Id = player\
+        GROUP BY P_Id\
+        ORDER BY points desc;")
     result = c.fetchall()
     conn.close()
     return result
 
 
-def reportMatch(winner, loser):
+def reportMatch(player1, player2, player1Result, player2Result):
     """Records the outcome of a single match between two players.
 
     Args:
-      winner:  the id number of the player who won
-      loser:  the id number of the player who lost
+      player1:  the id number of a player
+      player2:  the id number of a player
+      player1Result: either a 1,-1 or 0
+      player2Result: either a 1,-1 or 0
     """
 
-    conn = connect()
-    c = conn.cursor()
-    # Insert a new record into the Matches table using
-    # the player id for each player and the id of the winner
-    c.execute(
-        """INSERT INTO matches(P1,P2,winner)
-        VALUES(%s, %s, %s)""",
-        (winner, loser, winner))
-    conn.commit()
-    conn.close()
+    # Check to make sure a win, loss or tie was entered correctly
+    # by checking that the sum of the two results is zero
+    if player1Result + player2Result != 0:
+        raise ValueError("""Oops!  sum of results did not equal zero, enter
+              1, -1 or 0...""")
+    else:
 
+        conn = connect()
+        c = conn.cursor()
+        # Insert a new record into the Matches table using
+        # the player id for each player, a 1 for a win, -1 for a loss
+        # and 0 for a tie.
+        c.execute(
+            """INSERT INTO matches(P1,P2,P1_result,P2_result)
+            VALUES(%s, %s, %s, %s)""",
+            (player1, player2, player1Result, player2Result))
+        conn.commit()
+        conn.close()
+
+# deleteMatches()
+# reportMatch(1, 2, 1, -1)
+# reportMatch(3, 4, 1, -1)
+# reportMatch(5, 6, 0, 0)
+# reportMatch(1, 3, 1, -1)
+# reportMatch(5, 2, 1, -1)
+# reportMatch(4, 6, 0, 0)
+print playerStandings()
 
 def previousMatch(player1, opponent1):
     """Determines if two players have previously played a match
