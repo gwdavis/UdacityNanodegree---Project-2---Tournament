@@ -29,4 +29,7 @@ Running the program
 > \i tournament.sql
 
 	From here you will have database with a few players and matches already added for testing purposes.
+name|sex|age
+----|---|---
+how |to |thi
 
