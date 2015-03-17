@@ -42,9 +42,9 @@ Running the program
 '''
 > psql  
 ```
-* From within psql: 
+* From within psql:
 ``` 
-> \i tournament.sql
+> .\i tournament.sql
 ```
 
 From here you will have database with a few players and matches already added to the database for testing purposes. 
@@ -74,7 +74,7 @@ To use the functions from python, run the python interpreter and import the nece
 ```
 The methods/functions can be called individually e.g.:
 ```
-playerStandings()
+>>> playerStandings()
 ```
 
 
