@@ -1,6 +1,6 @@
--- Tournament v1.1
+-- Tournament v1.2
 -- Table definitions for the tournament project.
--- Fork - allow tied games
+-- Fork - Distinguish Player Ties
 -- a Udacity Nano-Degree Project for Full Stack Foundations
 -- March 2015 by Gary Davis
 
