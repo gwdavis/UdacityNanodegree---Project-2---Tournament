@@ -28,9 +28,9 @@ Running the program
 * From within psql:  
 > \i tournament.sql
 
-	From here you will have database with a few players and matches already added for testing purposes.
-Name | Lunch order | Spicy      | Owes
-------- | ---------------- | ---------- | ---------:
-Joan  | saag paneer | medium | $11
-Sally  | vindaloo        | mild       | $14
-Erin   | lamb madras | HOT      | $5
+	From here you will have database with a few players and matches already added for testing purposes.  
+
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
