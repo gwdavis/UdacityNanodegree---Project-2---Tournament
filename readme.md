@@ -3,19 +3,19 @@ March 2015 by Gary Davis
 
 Tournament is small python backend that implements an SQL database using postgresql to store players and determine the winner for a Swiss-Style tournament (see: http://en.wikipedia.org/wiki/Swiss-system_tournament).
 
-Requirements:
+###Requirements:
 * Python
 * postgresql
 * psql 9.3.6
 
 For the class, we installed a virtual machine using VirtualBox and Vagrant and pulled the necessary setup from GIT (see: https://www.udacity.com/wiki/ud197/install-vagrant)
 
-Files:
+###Files:
 * tournament.sql - the postresql model of the database
 * tournament.py - the program containing the methods or functions that can be called from python
 * tournament_test.py - the unit-test file provided by Udacity
 
-Installation (on a Mac OS)
+###Installation (on a Mac OS)
 * Open Terminal on the Mac (it is found in the utilities folder or use Spotlight to search for it)
 * Change the directory from home to the vagrant directory installed on the Mac.  This can be done with:
 ```
@@ -32,7 +32,7 @@ Installation (on a Mac OS)
   You should now see the command line of the virtual machine
 
 
-Running the program
+###Running the program
 
 * From the command line of the virtual machine, change directory to that of the tournament files:
 ```
@@ -56,7 +56,7 @@ or from within python:
 ```
 > python tournament_test.py
 ```
-Methods/Functions included in tournament.py:
+######Methods/Functions included in tournament.py:
 *connect()
 * deleteMatches() - delete all matches from the database
 * deletePlayers() - delete all players from teh database
@@ -73,10 +73,11 @@ To use the functions from python, run the python interpreter and import the nece
 >>> from tournament import *
 ```
 The methods/functions can be called individually e.g.:
-```
+```python
 >>> playerStandings()
+[(20, 'Fluttershy', 1L, 1L), (19, 'Twilight Sparkle', 1L, 1L), (21, 'Applejack', 0L, 1L), (22, 'Pinkie Pie', 0L, 1L)]
 ```
-
+The first number in each tuple is the player id follwed by play name, number of wins and number of losses.  The 'L' after the numbers shows the formatting used for the number (i.e. long)
 
 
 
