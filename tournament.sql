@@ -1,8 +1,9 @@
 -- Table definitions for the tournament project.
---
+-- a Udacity Nano-Degree Project for Full Stack Foundations
+-- March 2015 by Gary Davis
 
--- Initialize a new database by first making sure we are not connected to existing database of the same
--- name and dropping it if it exits
+-- Initialize a new database by first making sure we are not connected 
+-- to existing database of the same name and dropping it if it exits
 
 \c vagrant
 
@@ -11,6 +12,7 @@ drop database if exists tournament;
 create database tournament;
 
 -- Connect to the database and create the initial tables
+-- for players and their matches.
 
 \c tournament
 
@@ -24,8 +26,9 @@ create table matches(
 	P2 integer references players(P_Id),
 	winner integer references players(P_Id));
 
--- Create a view of match history for every player listing opponent
--- and win as 1, zero as loss
+-- Create a view of match history for every player listing their opponent
+-- and win as 1, zero as loss.  So for each match there will be two listings
+-- in this view
 
 create view long_match_list as
 	SELECT
@@ -47,6 +50,8 @@ create view long_match_list as
 		M_Id;
 
 -- Populate the players table with some dummy players
+-- These can be delete with the provided methods/functions
+-- or deleted or commented out for production use.
 
 INSERT INTO players(player_name) VALUES ('Henry the VIII');
 INSERT INTO players(player_name) VALUES ('Catherine the Great');
@@ -56,7 +61,7 @@ INSERT INTO players(player_name) VALUES ('Julius Ceasar');
 INSERT INTO players(player_name) VALUES ('Aristotle');
 INSERT INTO players(player_name) VALUES ('Odd Man Out');
 
--- Populate some matches
+-- Populate the matches table with some dummy matches
 
 INSERT INTO matches(P1, P2, winner) VALUES (1, 2,1);
 INSERT INTO matches(P1, P2, winner) VALUES (3,4,3);

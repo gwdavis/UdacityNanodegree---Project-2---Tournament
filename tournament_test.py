@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #
 # Test cases for tournament.py
+# a Udacity Nano-Degree Project for Full Stack Foundations
+
 
 from tournament import *
 
