@@ -100,6 +100,52 @@ def playerStandings():
     return result
 
 
+# Create a method that returns the number of points earned for
+# a particular player and in this use case we will call him an
+# opponent as we want to get the summ of opponets points.
+def playerPoints(opponentID):
+    """Sum the total points for a player and return an integer
+
+    Args: opponent id"""
+
+    conn = connect()
+    c = conn.cursor()
+    c.execute(
+        """SELECT SUM(points)
+        FROM long_match_list
+        WHERE player = %s""", (opponentID,))
+    result = str(c.fetchone()[0])
+    conn.close
+    return result
+
+
+# Create a method that returns a list of opponents
+def opponentList(playerid):
+    """Output a list of opponents, at the moment,
+    this list is a list of tuples with one opponent ID
+    in each tuple.
+
+    Args: player ID"""
+
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""SELECT opponent
+        FROM long_match_list
+        WHERE player = %s""", (playerid,))
+    result = c.fetchall()
+    conn.close
+    return result
+
+
+# Create a method that produces standings sorted by points and 
+# opponent-match-points ("OMP").  Consider:
+# Left join players to long_match_list on P_id, to this left join long_match_list2
+# on opponentsID and P_ID, then sum opponents points2 grouped on opponents, next sum
+# points grouped on p_id, order by points and OMP
+def OMP_Standings():
+    pass
+
+
 def reportMatch(player1, player2, player1Result, player2Result):
     """Records the outcome of a single match between two players.
 
@@ -129,6 +175,7 @@ def reportMatch(player1, player2, player1Result, player2Result):
         conn.commit()
         conn.close()
 
+# Following can be used to test reportMatch()
 # deleteMatches()
 # reportMatch(1, 2, 1, -1)
 # reportMatch(3, 4, 1, -1)
@@ -136,7 +183,7 @@ def reportMatch(player1, player2, player1Result, player2Result):
 # reportMatch(1, 3, 1, -1)
 # reportMatch(5, 2, 1, -1)
 # reportMatch(4, 6, 0, 0)
-print playerStandings()
+# print playerStandings()
 
 def previousMatch(player1, opponent1):
     """Determines if two players have previously played a match
@@ -234,9 +281,9 @@ def swissPairings():
         - Modify long_match_list_view wins column to simply be
           the sum of the P1 and P2 results
         - Modify the unit test for the new inputs.
-    To Handle Ties in Ranking (SQL QUERY RESEARCH REQUIRED BEFORE SUBMITTING):
-        - For each player, sum of wins, count of matches, list of opponents, 
-          for each opponent sum of wins which is in the query or do another query.
+    To Handle Ties in Ranking:
+        - For each player, sum of points, count of matches, list of opponents, 
+          each opponent sum of wins which is in the query or do another query.
     To Handle Multiple Tournaments (preliminary thoughts):
         - New Table - Tournaments
         - Add Tournaments method
