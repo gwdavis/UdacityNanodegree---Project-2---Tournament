@@ -76,19 +76,19 @@ def playerStandings():
     # for each match).  Select the id, name and a count of the wins for each player.
     # Sort by the wins .
     c.execute(
-        """SELECT
-            P_Id as id,
-            player_name as name,
-            # summing the wins column gives the total number of wins
-            COALESCE(SUM(wins), 0) as wins,
-            # counting the wins column gives the total number of matches
-            count(wins) as matches
+        # summing the wins column gives the total number of wins
+        # counting the wins column gives the total number of matches
         # players table provides the name
-        FROM players
         #long_match_view table provides the wins column as a 1 or 0
-        LEFT JOIN long_match_list ON P_Id = player
-        GROUP BY P_Id
-        ORDER BY wins desc;""")
+        "SELECT\
+            P_Id as id,\
+            player_name as name,\
+            COALESCE(SUM(wins), 0) as wins,\
+            count(wins) as matches\
+        FROM players\
+        LEFT JOIN long_match_list ON P_Id = player\
+        GROUP BY P_Id\
+        ORDER BY wins desc;")
     result = c.fetchall()
     conn.close()
     return result
