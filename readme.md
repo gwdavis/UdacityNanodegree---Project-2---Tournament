@@ -30,3 +30,7 @@ Running the program
 
 	From here you will have database with a few players and matches already added for testing purposes.
 
+'''python
+print 'this is it'
+'''
+
