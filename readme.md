@@ -39,7 +39,7 @@ Running the program
 > cd /vagrant/tournament
 ```
 * The command line of the virtual machine (see above) we will set up the SQL database by opening PSQL and running the database model:  
-'''
+```
 > psql  
 ```
 * From within psql:
