@@ -12,8 +12,10 @@ For the class, we installed a virtual machine using VirtualBox and Vagrant and p
 
 Installation (on a Mac OS)
 * Open Terminal on the Mac (it is found in the utilities folder or use Spotlight to search for it)
-* Change the directory from home to the vagrant directory installed on the Mac.  This can be done with:    
+* Change the directory from home to the vagrant directory installed on the Mac.  This can be done with:
+```
 > cd /fullstack/vagrant  
+```
 * Fire up the virtual machine:  
 > vagrant up  
 * SSH into the virtual machine, again form the Mac Terminal program:  
