@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 #
 # tournament.py -- implementation of a Swiss-system tournament
+# a Udacity Nano-Degree Project for Full Stack Foundations
+# March 2015 by Gary Davis
 #
 
 import psycopg2
 
 
 def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
+    """Connect to the PostgreSQL database for tournament.py.
+    Returns a database connection."""
     return psycopg2.connect("dbname=tournament")
 
 
@@ -155,16 +158,14 @@ def previousMatch(player1, opponent1):
     c = conn.cursor()
     # Simply count the number of matches between players using the
     # long_match_list_view that lists all matches for each player in the 
-    # first column (i.e. there will be two entries ofr each match in
-    # in this list)
+    # first column (i.e. there will be two entries for each match in
+    # in the long_match_list)
     c.execute(
         """SELECT count(case when opponent = %s then 1 end)
         from long_match_list
         where player = %s""", (opponent1, player1))
     result = c.fetchone()
     conn.close()
-    # remove comment to print result of test:
-    # print "previous match comparison result: ",  str(result[0]), player1, opponent1
     if result[0] > 0:
         return True
     return False
@@ -205,7 +206,7 @@ def swissPairings():
         else:
             registerPlayer("Bye")
 
-    # Retrieve the standings and initialize a variable
+    # Retrieve the standings from the database and initialize a variable
     standings = playerStandings()
     pairings = []
 
@@ -228,13 +229,13 @@ def swissPairings():
             break
     return pairings
 
-    """ DONT FORGET TO CHECK IF WE NEED TO BLEACH THE INPUTS"""
-
     
-    """ FINAL COMMENTS:
+    """ EXTRA CREDIT COMMENTS:
     Should have tried for the extra credits from the start...  Can't
     get enthused about redoing my tables...
-    To Handle Odd Players - Done above
+    To Handle Odd Players - Done above but does not automatically enter a
+        result for the bye match.  This must be entered manually as with all
+        other results.
     To Handle Ties:
         - Match Table Parameters - Id, P1, P2, P1 Result, P2 Result
           so that one enters 1 for win, -1 of loss and 0 for tie

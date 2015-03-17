@@ -57,7 +57,7 @@ or from within python:
 > python tournament_test.py
 ```
 ####Methods/Functions included in tournament.py:
-*connect()
+* connect() - connects to the database from python
 * deleteMatches() - delete all matches from the database
 * deletePlayers() - delete all players from teh database
 * countPlayers() - provides a count of the players
@@ -71,6 +71,7 @@ To use the functions from python, run the python interpreter and import the nece
 > python
 >>> import psycopg2
 >>> from tournament import *
+>>> connect()
 ```
 The methods/functions can be called individually e.g.:
 ```python
