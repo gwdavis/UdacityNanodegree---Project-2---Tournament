@@ -7,6 +7,7 @@
 #
 
 import psycopg2
+import pprint
 
 
 def connect():
@@ -64,7 +65,7 @@ def registerPlayer(name):
 
 def playerStandings():
     """Returns a list of the players and their points records and number of
-    matches played, sorted by wins.
+    matches played, sorted by total points.
 
     Returns:
       A list of tuples, each of which contains (id, name, points, matches):
@@ -132,18 +133,102 @@ def opponentList(playerid):
     c.execute("""SELECT opponent
         FROM long_match_list
         WHERE player = %s""", (playerid,))
-    result = c.fetchall()
+    temp_result = c.fetchall()
+    conn.close
+    # convert list of single element tuples to a list
+    # from  http://stackoverflow.com/a/716761/4671044
+    result = [j for i in temp_result for j in i]
+    return result
+
+
+# Create a method that returns the points earned by opponents of
+# a given player
+def opponentPoints(playerid):
+    """Output the sum of points earned by the opponents of a given player
+
+    Args: player id"""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""SELECT SUM(points)
+        FROM long_match_list
+        WHERE player IN
+            (SELECT opponent
+            FROM long_match_list as LML2
+            WHERE LML2.player = %s)""", (playerid,))
+    result = str(c.fetchone()[0])
     conn.close
     return result
 
 
-# Create a method that produces standings sorted by points and 
+# Create a method that returns the points earned by opponents of
+# a list of players
+def listOpponentPoints():
+    """Output a list of tuples containing player id and 
+    the sum of opponents points"""
+    conn = connect()
+    c = conn.cursor()
+    c.execute(
+         """SELECT
+                player, sum(points) as sum_points,
+                sum(opp_points) as sum_opp_points
+            FROM long_match_list as MBP
+            LEFT JOIN
+               (SELECT
+                    MBP2.player as opponent,
+                    SUM(points) as opp_points
+                FROM long_match_list as MBP2
+                WHERE player IN
+                        (SELECT opponent
+                        FROM long_match_list as MBP3)
+                GROUP BY MBP2.player) as opp_list
+                ON MBP.opponent = opp_list.opponent
+            GROUP BY player
+            ORDER BY sum_points desc, sum_opp_points desc""")
+
+    result = c.fetchall()
+    conn.close
+    return result
+
+print opponentPoints(1)
+print opponentPoints(2)
+print opponentPoints(3)
+print opponentPoints(4)
+print opponentPoints(5)
+print listOpponentPoints()
+
+
+# Create a method that produces standings sorted by points and
 # opponent-match-points ("OMP").  Consider:
-# Left join players to long_match_list on P_id, to this left join long_match_list2
-# on opponentsID and P_ID, then sum opponents points2 grouped on opponents, next sum
-# points grouped on p_id, order by points and OMP
+# Left join players to long_match_list on P_id, to this left join
+# long_match_list2 on opponentsID and P_ID, then sum opponents points2
+# grouped on opponents, then sum points grouped on p_id,
+# order by points and OMP
 def OMP_Standings():
-    pass
+    """Returns a list of the players and their points records and number of
+    matches played, sorted by total points and in the case of a tie by
+    the sum of the points earned by their opponents, or opponent-match-points.
+
+    Returns:
+      A list of tuples, each of which contains (id, name, points, matches):
+        id: the player's unique id (assigned by the database)
+        name: the player's full name (as registered)
+        points: the sum of wins, losses and ties for the player
+        matches: the number of matches the player has played
+    """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""SELECT
+            P_Id as id,
+            player_name as name,
+            SUM(points) as points,
+            count(points) as matches
+        FROM players
+        LEFT JOIN long_match_list ON P_Id = player
+        GROUP BY P_Id
+        ORDER BY points desc;""")
+    result = c.fetchall()
+    conn.close()
+    return result
 
 
 def reportMatch(player1, player2, player1Result, player2Result):
