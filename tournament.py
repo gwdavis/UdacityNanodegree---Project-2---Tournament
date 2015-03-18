@@ -74,7 +74,7 @@ def playerStandings():
     conn = connect()
     c = conn.cursor()
     # Join the players table and a view of the matches table.
-    # The view of the matches table (long_match_list) lists each player
+    # The view of the matches table (matches_by_player) lists each player
     # in column one and his opponent and results (i.e. there will be two enteries
     # for each match).  Select the id, name and a count of the wins for each player.
     # Sort by the wins .
@@ -89,7 +89,7 @@ def playerStandings():
             COALESCE(SUM(wins), 0) as wins,\
             count(wins) as matches\
         FROM players\
-        LEFT JOIN long_match_list ON P_Id = player\
+        LEFT JOIN matches_by_player ON P_Id = player\
         GROUP BY P_Id\
         ORDER BY wins desc;")
     result = c.fetchall()
@@ -111,7 +111,7 @@ def playerStandings2():
     c = conn.cursor()
 
     # Join the players table and a view of the matches table.
-    # The view of the matches table (long_match_list) lists each player
+    # The view of the matches table (matches_by_player) lists each player
     # in column one and his opponent and results (i.e. there will be two
     # enteries for each match).  Select the id, name and a count of the
     # wins for each player.
@@ -121,7 +121,7 @@ def playerStandings2():
             player as id,
             COALESCE(SUM(wins), 0) as wins,
             count(wins) as matches
-        FROM long_match_list
+        FROM matches_by_player
         GROUP BY player
         ORDER BY wins desc;""")
     result = c.fetchall()
@@ -157,12 +157,12 @@ def previousMatch(player1, opponent1):
     conn = connect()
     c = conn.cursor()
     # Simply count the number of matches between players using the
-    # long_match_list_view that lists all matches for each player in the 
+    # matches_by_player_view that lists all matches for each player in the 
     # first column (i.e. there will be two entries for each match in
-    # in the long_match_list)
+    # in the matches_by_player)
     c.execute(
         """SELECT count(case when opponent = %s then 1 end)
-        from long_match_list
+        from matches_by_player
         where player = %s""", (opponent1, player1))
     result = c.fetchone()
     conn.close()
@@ -242,7 +242,7 @@ def swissPairings():
         - Modify report match
            - Add a test to sum the two results columns to raise an error
              if the sum != to zero
-        - Modify long_match_list_view wins column to simply be
+        - Modify matches_by_player_view wins column to simply be
           the sum of the P1 and P2 results
         - Modify the unit test for the new inputs.
     To Handle Ties in Ranking (SQL QUERY RESEARCH REQUIRED BEFORE SUBMITTING):
