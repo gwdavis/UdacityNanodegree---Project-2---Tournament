@@ -37,7 +37,7 @@ create table matches(
 -- and win as 1, zero as loss.  So for each match there will be two listings
 -- in this view
 
-create view long_match_list as
+create view matches_by_player as
 	SELECT
 		M_Id,
 		P1 as player,
