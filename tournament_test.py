@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #
-# Test cases for tournament.py
+# Test cases for tournament.py v1.1
 # a Udacity Nano-Degree Project for Full Stack Foundations
+# Modified by Gary Davis to handle matches with ties.  Modified
+# test #6, #7 & #8
 
 
 from tournament import *
@@ -57,7 +59,7 @@ def testRegisterCountDelete():
         raise ValueError("After deleting, countPlayers should return zero.")
     print "5. Players can be registered and deleted."
 
-
+# GWD modified test semantics substituting points for wins
 def testStandingsBeforeMatches():
     deleteMatches()
     deletePlayers()
@@ -74,13 +76,13 @@ def testStandingsBeforeMatches():
     [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
     if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
         raise ValueError(
-            "Newly registered players should have no matches or wins.")
+            "Newly registered players should have no matches or points.")
     if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
         raise ValueError("Registered players' names should appear in standings, "
                          "even if they have no matches played.")
     print "6. Newly registered players appear in the standings with no matches."
 
-
+# GWD modified test semantics substituting points for wins
 def testReportMatches():
     deleteMatches()
     deletePlayers()
@@ -90,19 +92,20 @@ def testReportMatches():
     registerPlayer("Diane Grant")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
+    reportMatch(id1, id2, 1, -1)
+    reportMatch(id3, id4, 1, -1)
     standings = playerStandings()
     for (i, n, w, m) in standings:
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
-        if i in (id1, id3) and w != 1:
-            raise ValueError("Each match winner should have one win recorded.")
-        elif i in (id2, id4) and w != 0:
-            raise ValueError("Each match loser should have zero wins recorded.")
+        if i in (id1, id3) and w <= 0:
+            raise ValueError("Each match winner should have one point recorded.")
+        elif i in (id2, id4) and w >= 0:
+            raise ValueError("Each match loser should have -1 points recorded.")
     print "7. After a match, players have updated standings."
 
 
+# Adjust reportMatch  to include points
 def testPairings():
     deleteMatches()
     deletePlayers()
@@ -112,8 +115,8 @@ def testPairings():
     registerPlayer("Pinkie Pie")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
+    reportMatch(id1, id2, 1, -1)
+    reportMatch(id3, id4, 1, -1)
     pairings = swissPairings()
     if len(pairings) != 2:
         raise ValueError(
