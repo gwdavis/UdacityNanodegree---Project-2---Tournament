@@ -83,19 +83,26 @@ def playerStandings():
 
     # It was necessary to use two view tables to join a sum of player points
     # and Opponent Match Points ("OPM"). Joint these two views
-    # Sort by the points and then by OPM .
+    # Sort by the points and then by OPM and then select the four columns
+    # required by Udacity subsituting 0 for any null entries.
 
     c.execute(
-        """SELECT
-                p.id,
-                p.name,
-                p.points,
-                p.matches,
-                o.OMP
-            FROM playerPoints p
-            LEFT JOIN cumPoints o
-            ON p.id = o.id
-            ORDER BY p.points desc, o.OMP desc
+         """SELECT
+                id,
+                name,
+                COALESCE(points, 0) as points,
+                COALESCE(matches, 0) as matches
+            FROM (
+                SELECT
+                    p.id,
+                    p.name,
+                    p.points,
+                    p.matches,
+                    o.OMP
+                FROM playerPoints p
+                LEFT JOIN cumPoints o
+                ON p.id = o.id
+                ORDER BY p.points desc, o.OMP desc) OMP
             """)
     result = c.fetchall()
     # BUG_ALERT - the OMP output type in result is Decimal('n') where n is

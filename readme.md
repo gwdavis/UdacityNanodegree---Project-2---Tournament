@@ -78,6 +78,7 @@ To use the functions from python, run the python interpreter (or iPython) and im
 ```ShellSession
 > python
 >>> import psycopg2
+>>> import tournament
 >>> from tournament import *
 ```
 The methods/functions can then be called individually e.g.:
