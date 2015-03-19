@@ -8,6 +8,7 @@
 
 import psycopg2
 
+
 def connect():
     """Connect to the PostgreSQL database for tournament.py.
     Returns a database connection."""
@@ -69,108 +70,23 @@ def playerStandings():
 
     Returns:
       A list of tuples, each of which contains (id, name, points, matches, OMP):
-        id: the player's unique id (assigned by the database)
-        name: the player's full name (as registered)
+        id:     the player's unique id (assigned by the database)
+        name:   the player's full name (as registered)
         points: the sum of wins, losses and ties for the player
         matches: the number of matches the player has played
-<<<<<<< HEAD
-    """
-    conn = connect()
-    c = conn.cursor()
-    # Join the players table and a view of the matches table.
-    # The view of the matches table (matches_by_player) lists each player
-    # in column one and his opponent and results (i.e. there will be two enteries
-    # for each match).  Select the id, name and a count of the wins for each player.
-    # Sort by the wins .
-    c.execute(
-        # summing the wins column gives the total number of wins
-        # counting the wins column gives the total number of matches
-        # players table provides the name
-        #long_match_view table provides the wins column as a 1 or 0
-        "SELECT\
-            P_Id as id,\
-            player_name as name,\
-            COALESCE(SUM(wins), 0) as wins,\
-            count(wins) as matches\
-        FROM players\
-        LEFT JOIN matches_by_player ON P_Id = player\
-        GROUP BY P_Id\
-        ORDER BY wins desc;")
-    result = c.fetchall()
-    conn.close()
-    return result
-||||||| merged common ancestors
-    """
-    conn = connect()
-    c = conn.cursor()
-    # Join the players table and a view of the matches table.
-    # The view of the matches table (long_match_list) lists each player
-    # in column one and his opponent and results (i.e. there will be two enteries
-    # for each match).  Select the id, name and a count of the wins for each player.
-    # Sort by the wins .
-    c.execute(
-        # summing the wins column gives the total number of wins
-        # counting the wins column gives the total number of matches
-        # players table provides the name
-        #long_match_view table provides the wins column as a 1 or 0
-        "SELECT\
-            P_Id as id,\
-            player_name as name,\
-            COALESCE(SUM(wins), 0) as wins,\
-            count(wins) as matches\
-        FROM players\
-        LEFT JOIN long_match_list ON P_Id = player\
-        GROUP BY P_Id\
-        ORDER BY wins desc;")
-    result = c.fetchall()
-    conn.close()
-    return result
-=======
-        OMP: Opponent Match Points is the sum of the points earned in all
-            reported matches in order to decide ties.
+        OMP:    Opponent Match Points is the sum of the points earned in all
+                reported matches in order to decide ties.
         """
->>>>>>> Allow-Tied-Games
 
     conn = connect()
     c = conn.cursor()
 
-<<<<<<< HEAD
-    # Join the players table and a view of the matches table.
-    # The view of the matches table (matches_by_player) lists each player
-    # in column one and his opponent and results (i.e. there will be two
-    # enteries for each match).  Select the id, name and a count of the
-    # wins for each player.
-    # Sort by the wins .
-||||||| merged common ancestors
-    # Join the players table and a view of the matches table.
-    # The view of the matches table (long_match_list) lists each player
-    # in column one and his opponent and results (i.e. there will be two
-    # enteries for each match).  Select the id, name and a count of the
-    # wins for each player.
-    # Sort by the wins .
-=======
     # It was necessary to use two view tables to join a sum of player points
     # and Opponent Match Points ("OPM"). Joint these two views
     # Sort by the points and then by OPM .
 
->>>>>>> Allow-Tied-Games
     c.execute(
         """SELECT
-<<<<<<< HEAD
-            player as id,
-            COALESCE(SUM(wins), 0) as wins,
-            count(wins) as matches
-        FROM matches_by_player
-        GROUP BY player
-        ORDER BY wins desc;""")
-||||||| merged common ancestors
-            player as id,
-            COALESCE(SUM(wins), 0) as wins,
-            count(wins) as matches
-        FROM long_match_list
-        GROUP BY player
-        ORDER BY wins desc;""")
-=======
                 p.id,
                 p.name,
                 p.points,
@@ -181,7 +97,6 @@ def playerStandings():
             ON p.id = o.id
             ORDER BY p.points desc, o.OMP desc
             """)
->>>>>>> Allow-Tied-Games
     result = c.fetchall()
     # BUG_ALERT - the OMP output type in result is Decimal('n') where n is
     # the number of points.  It sorts correctly but is odd.
@@ -240,7 +155,7 @@ def previousMatch(player1, opponent1):
     conn = connect()
     c = conn.cursor()
     # Simply count the number of matches between players using the
-    # matches_by_player_view that lists all matches for each player in the 
+    # matches_by_player_view that lists all matches for each player in the
     # first column (i.e. there will be two entries for each match in
     # in the matches_by_player)
     c.execute(
@@ -312,67 +227,6 @@ def swissPairings():
             break
     return pairings
 
-<<<<<<< HEAD
-    
-    """ EXTRA CREDIT COMMENTS:
-    Should have tried for the extra credits from the start...  Can't
-    get enthused about redoing my tables...
-    To Handle Odd Players - Done above but does not automatically enter a
-        result for the bye match.  This must be entered manually as with all
-        other results.
-    To Handle Ties:
-        - Match Table Parameters - Id, P1, P2, P1 Result, P2 Result
-          so that one enters 1 for win, -1 of loss and 0 for tie
-        - Modify report match
-           - Add a test to sum the two results columns to raise an error
-             if the sum != to zero
-        - Modify matches_by_player_view wins column to simply be
-          the sum of the P1 and P2 results
-        - Modify the unit test for the new inputs.
-    To Handle Ties in Ranking (SQL QUERY RESEARCH REQUIRED BEFORE SUBMITTING):
-        - For each player, sum of wins, count of matches, list of opponents, 
-          for each opponent sum of wins which is in the query or do another query.
-    To Handle Multiple Tournaments (preliminary thoughts):
-        - New Table - Tournaments
-        - Add Tournaments method
-        - Add registered Player to a tournament method
-        - Add Delete player method removes a player from a tournament
-        - Add Match results will add the tournament identifyier
-        - Add tournament parameter to all applicable methods.  Alternatively
-          consider creating an "active tournament" value in the tournament table
-          so that only one tournament can be active.  Another alternative is 
-          to have an active tournament for the session as a global variable.
-||||||| merged common ancestors
-    
-    """ EXTRA CREDIT COMMENTS:
-    Should have tried for the extra credits from the start...  Can't
-    get enthused about redoing my tables...
-    To Handle Odd Players - Done above but does not automatically enter a
-        result for the bye match.  This must be entered manually as with all
-        other results.
-    To Handle Ties:
-        - Match Table Parameters - Id, P1, P2, P1 Result, P2 Result
-          so that one enters 1 for win, -1 of loss and 0 for tie
-        - Modify report match
-           - Add a test to sum the two results columns to raise an error
-             if the sum != to zero
-        - Modify long_match_list_view wins column to simply be
-          the sum of the P1 and P2 results
-        - Modify the unit test for the new inputs.
-    To Handle Ties in Ranking (SQL QUERY RESEARCH REQUIRED BEFORE SUBMITTING):
-        - For each player, sum of wins, count of matches, list of opponents, 
-          for each opponent sum of wins which is in the query or do another query.
-    To Handle Multiple Tournaments (preliminary thoughts):
-        - New Table - Tournaments
-        - Add Tournaments method
-        - Add registered Player to a tournament method
-        - Add Delete player method removes a player from a tournament
-        - Add Match results will add the tournament identifyier
-        - Add tournament parameter to all applicable methods.  Alternatively
-          consider creating an "active tournament" value in the tournament table
-          so that only one tournament can be active.  Another alternative is 
-          to have an active tournament for the session as a global variable.
-=======
 
 def dummyDatabase():
     """Populates the tables with some dummy players and matches
@@ -410,7 +264,7 @@ To Handle Odd Players -     Done above but does not automatically enter a
     other results.
 To Handle Ties -            Done
 To Handle Ties in Ranking - Done
-To Handle Multiple Tournaments (preliminary thoughts) - 
+To Handle Multiple Tournaments (preliminary thoughts) -
                             Not done
     - New Table - Tournaments
     - Add Tournaments method
@@ -419,7 +273,7 @@ To Handle Multiple Tournaments (preliminary thoughts) -
     - Add Match results will add the tournament identifyier
     - Add tournament parameter to all applicable methods.  Alternatively
       consider creating an "active tournament" value in the tournament table
-      so that only one tournament can be active.  Another alternative is 
+      so that only one tournament can be active.  Another alternative is
       to have an active tournament for the session as a global variable.
 """
 
@@ -429,8 +283,11 @@ To Handle Multiple Tournaments (preliminary thoughts) -
 
 
 """ NOTA BENE
-Following functions were used to develop ideas but are not used by the 
+Following functions were used to develop ideas but are not used by the
 application"""
+
+
+
 
 
 def playerStandings_old():
@@ -443,8 +300,6 @@ def playerStandings_old():
         name: the player's full name (as registered)
         points: the sum of wins, losses and ties for the player
         matches: the number of matches the player has played
->>>>>>> Distinguish-Player-Ties
->>>>>>> Allow-Tied-Games
     """
     conn = connect()
     c = conn.cursor()
@@ -530,4 +385,3 @@ def opponentPoints(playerid):
     result = str(c.fetchone()[0])
     conn.close
     return result
-
